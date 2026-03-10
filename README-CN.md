@@ -2,13 +2,13 @@
 
 The dataset and benchmark of gesring.
 
-## Data Download
+## 数据下载
 
-Download the dataset from Zenodo:
+从 Zenodo 下载数据集：
 
 https://zenodo.org/records/18933199?token=eyJhbGciOiJIUzUxMiIsImlhdCI6MTc3MzEyMjI4MSwiZXhwIjoxNzc4MzcxMTk5fQ.eyJpZCI6ImU5NTlmMzU3LTA2NWYtNDI5ZC1hOWU4LTlhNDIxOWRmYTI2NyIsImRhdGEiOnt9LCJyYW5kb20iOiI2ZjM4NGJmMWM0MDdlNjA1MDAzZmE3ZThlODg5YzhhNyJ9.VqcnINJWgCUupibwIQnPB6X6938wIDG5w77hXcruK0msuVwlta8_3y1a2g74TkgZFwCSnEbHCuM3kq_yjEdahw
 
-Recommended layout:
+推荐放置方式：
 
 ```text
 gesring-benchmark/
@@ -22,43 +22,43 @@ gesring-benchmark/
         └── test_y.npy
 ```
 
-## Data Format
+## 数据格式
 
-Benchmarking uses two `.npy` files by default:
+评测默认使用两个 `.npy` 文件：
 
-- `data/gesture_merged/test_x.npy`: IMU sequence, shape `N x 6 x 200`
-- `data/gesture_merged/test_y.npy`: labels, shape `N`
+- `data/gesture_merged/test_x.npy`: IMU 序列，形状为 `N x 6 x 200`
+- `data/gesture_merged/test_y.npy`: 标签，形状为 `N`
 
-Conventions:
+约定：
 
-- `N` is the number of samples
-- `6` is the number of IMU channels
-- `200` is the time window length
-- recommended dtype: `x` as `float32`, `y` as `int64`
+- `N` 是样本数
+- `6` 是 IMU 通道数
+- `200` 是时间窗口长度
+- `x` dtype 建议为 `float32`，`y` dtype 建议为 `int64`
 
-## Benchmark Evaluation Scheme (Checkpoint)
+## Benchmark 评测方案（Checkpoint）
 
-Evaluation uses a fixed test set (default `data/gesture_merged/test_x.npy` and `data/gesture_merged/test_y.npy`) plus your checkpoint.
+评测使用固定测试集（默认 `data/gesture_merged/test_x.npy` 和 `data/gesture_merged/test_y.npy`）+ 你提供的 checkpoint。
 
-### Checkpoint Specification
+### Checkpoint 规范
 
-The evaluation script in this repo uses a **TorchScript checkpoint**:
+当前仓库提供的评测脚本使用 **TorchScript checkpoint**：
 
-- file format: `*.pt`
-- model input: `float32` tensor with shape `[B, 6, 200]`
-- model output supports two forms:
-1. `[B, C]` logits/probabilities (the script applies `argmax`)
-2. `[B]` predicted class ids
+- 文件格式：`*.pt`
+- 模型输入：`[B, 6, 200]` 的 `float32` tensor
+- 模型输出支持两种形式：
+1. `[B, C]` logits/probabilities（脚本内部取 `argmax`）
+2. `[B]` 预测类别 id
 
-### Metrics
+### 评测指标
 
 - `accuracy`
 - `macro_f1`
 - `confusion_matrix`
 
-## Full Evaluation Workflow
+## 完整评测流程
 
-### 1. Install dependencies with uv
+### 1. 使用 uv 安装依赖
 
 ```bash
 uv venv
@@ -66,23 +66,23 @@ source .venv/bin/activate
 uv pip install numpy torch
 ```
 
-### 2. Prepare data
+### 2. 准备数据
 
-Make sure the test files exist at the default paths:
+确保测试集文件存在（默认路径）：
 
 ```text
 data/gesture_merged/test_x.npy
 data/gesture_merged/test_y.npy
 ```
 
-And they contain:
+并且包含：
 
 - `x` -> `N x 6 x 200`
 - `y` -> `N`
 
-### 3. Export a TorchScript checkpoint
+### 3. 导出 TorchScript checkpoint
 
-If your current model is a standard PyTorch model, export it to TorchScript first:
+如果你当前是普通 PyTorch 模型，可以先导出 TorchScript：
 
 ```python
 import torch
@@ -95,7 +95,7 @@ scripted = torch.jit.trace(model, example)
 scripted.save("checkpoints/model.pt")
 ```
 
-### 4. Run evaluation
+### 4. 运行评测
 
 ```bash
 uv run python benchmark/eval_checkpoint.py \
@@ -105,7 +105,7 @@ uv run python benchmark/eval_checkpoint.py \
   --output results/test_metrics.json
 ```
 
-If you have a GPU:
+如果有 GPU：
 
 ```bash
 uv run python benchmark/eval_checkpoint.py \
@@ -113,9 +113,9 @@ uv run python benchmark/eval_checkpoint.py \
   --device cuda
 ```
 
-### 5. View results
+### 5. 查看结果
 
-The script prints JSON in terminal and can also write to the file specified by `--output`. The output fields include:
+脚本会在终端打印 JSON，并可写入 `--output` 指定文件。输出字段包括：
 
 - `num_samples`
 - `num_classes`
@@ -123,6 +123,6 @@ The script prints JSON in terminal and can also write to the file specified by `
 - `macro_f1`
 - `confusion_matrix`
 
-## Evaluation Script
+## 评测脚本
 
-- `benchmark/eval_checkpoint.py`: unified evaluation entrypoint based on TorchScript checkpoints.
+- `benchmark/eval_checkpoint.py`: 基于 TorchScript checkpoint 的统一评测入口。
