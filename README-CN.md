@@ -60,11 +60,19 @@ gesring-benchmark/
 
 ### 1. 使用 uv 安装依赖
 
+本项目使用 `uv` 管理依赖，并由 `uv.lock` 锁定版本（Python `3.12`）。请优先按锁文件安装：
+
 ```bash
-uv venv
-source .venv/bin/activate
-uv pip install numpy torch
+uv sync --locked
 ```
+
+可选：如果你希望直接使用 `python` 命令，可激活虚拟环境：
+
+```bash
+source .venv/bin/activate
+```
+
+如果不激活虚拟环境，请使用 `uv run` 执行命令。
 
 ### 2. 准备数据
 

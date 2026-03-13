@@ -60,11 +60,19 @@ The evaluation script in this repo uses a **TorchScript checkpoint**:
 
 ### 1. Install dependencies with uv
 
+This project is managed by `uv` and pinned by `uv.lock` (Python `3.12`). Install with lockfile:
+
 ```bash
-uv venv
-source .venv/bin/activate
-uv pip install numpy torch
+uv sync --locked
 ```
+
+Optional: activate the virtual environment for direct `python` usage:
+
+```bash
+source .venv/bin/activate
+```
+
+If you do not activate the environment, run commands with `uv run`.
 
 ### 2. Prepare data
 
